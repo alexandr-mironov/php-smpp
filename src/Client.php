@@ -351,6 +351,8 @@ class Client
                 // There are 133 octets available, but this would split the UCS the middle so use 132 instead
                 $csmsSplit = 132;
                 $message = mb_convert_encoding($message, 'UCS-2');
+                // Refresh message length with new encoding.
+                $msg_length = strlen($message);
                 break;
             case SMPP::DATA_CODING_DEFAULT:
                 // we send data in octets, but GSM 03.38 will be packed in septets (7-bit) by SMSC.
