@@ -25,6 +25,8 @@ class Socket
 
     protected static $defaultSendTimeout=100;
     protected static $defaultRecvTimeout=750;
+    protected static $sockedAddress = null;
+    protected static $sockedPort = 0;
     public static $defaultDebug=false;
 
     public static $forceIpv6=false;
@@ -217,6 +219,17 @@ class Socket
     }
 
     /**
+     * Sets the socket name and port
+     * @param  string  $address
+     * @param  int  $port
+     */
+    public function setSocketName($address, $port = 0)
+    {
+        self::$sockedAddress = $address;
+        self::$sockedPort = $port;
+    }
+
+    /**
      * Check if the socket is constructed, and there are no exceptions on it
      * Returns false if it's closed.
      * Throws SocketTransportException is state could not be ascertained
@@ -289,6 +302,9 @@ class Socket
         while ($it->valid()) {
             list($hostname,$port,$ip6s,$ip4s) = $it->current();
             if (!self::$forceIpv4 && !empty($ip6s)) { // Attempt IPv6s first
+                if (self::$sockedAddress !== null) {
+                    socket_bind($socket6, self::$sockedAddress, $port);
+                }
                 foreach ($ip6s as $ip) {
                     if ($this->debug) call_user_func($this->debugHandler, "Connecting to $ip:$port...");
                     $r = @socket_connect($socket6, $ip, $port);
@@ -303,6 +319,9 @@ class Socket
                 }
             }
             if (!self::$forceIpv6 && !empty($ip4s)) {
+                if (self::$sockedAddress !== null) {
+                    socket_bind($socket4, self::$sockedAddress, $port);
+                }
                 foreach ($ip4s as $ip) {
                     if ($this->debug) call_user_func($this->debugHandler, "Connecting to $ip:$port...");
                     $r = @socket_connect($socket4, $ip, $port);

@@ -3,7 +3,7 @@ PHP SMPP (v3.4) client
 
 Install:
 
-    composer require alexandr-mironov/php-smpp
+    composer require slavumni/php-smpp
     
 Example of wrapper (php>=7.0) for this Client.
 In this case we got ALPHANUMERIC sender value 'github_example':
@@ -46,6 +46,8 @@ class SmsBuilder
     {
         $this->transport = new Socket([$address], $port);
         $this->transport->setRecvTimeout($timeout);
+        // if need change output interface
+        $this->transport->setSocketName('192.0.0.100');
         $this->smppClient = new SmppClient($this->transport);
 
         // Activate binary hex-output of server interaction
